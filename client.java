@@ -7,9 +7,9 @@ public class client {
     public static void main(String[] args) throws Exception {
         String serverIP = "127.0.0.1"; 
         int port = 9999;
-        Socket clienSocket = null;
+        Socket clientSocket = null;
         try {
-            clienSocket = new Socket(serverIP, port);
+            clientSocket = new Socket(serverIP, port);
             
         } catch (IOException e) {
             // TODO: handle exception
@@ -18,8 +18,8 @@ public class client {
         } // end catch 
         // create i/o  streams for connection ; 
         BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in)); // getting user input 
-        DataOutputStream outToServer = new DataOutputStream(clienSocket.getOutputStream()); //sending msg to server
-        BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clienSocket.getInputStream()));
+        DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream()); //sending msg to server
+        BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
         // loop for sending messages from user to server 
         while (true) {
@@ -43,7 +43,7 @@ public class client {
             String serverResponse = inFromServer.readLine();
             System.out.println("Server: " + serverResponse);
         } // end while 
-            
+            clientSocket.close(); // close socket connection to server 
         } // end main 
         private static String calculateChecksum(String message) {
             int checksum = 0;
