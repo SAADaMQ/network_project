@@ -3,7 +3,10 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.util.Random;
 public class client {
+    private static int requestCount = 0;
+    private static int errorRequestsCount = 0;
     public static void main(String[] args) throws Exception {
         String serverIP = "127.0.0.1"; 
         int port = 9999;
@@ -38,6 +41,10 @@ public class client {
             } // check for quitting  command 
         
             String checksum = calculateChecksum(message);
+
+            message = simulateError(message,0.3);
+
+
 
             outToServer.writeBytes(message + ":" + checksum +"\n");
             String serverResponse = inFromServer.readLine();
@@ -90,6 +97,26 @@ public class client {
 
 
          }     
+         private static String simulateError(String message, double ErrorProbability ) {
+            requestCount++;
+            int expectedErrors = (int) (requestCount * ErrorProbability);
+            if (errorRequestsCount < expectedErrors ){
+                errorRequestsCount++;
+                return introduceRandomError(message);
+            }
+            return message;
+
+         }
+         private static String introduceRandomError(String message){
+            Random random = new Random();
+            StringBuilder CorruptedMessage = new StringBuilder(message);
+
+            int errorPosition = random.nextInt(message.length());
+            CorruptedMessage.setCharAt(errorPosition, (char) (random.nextInt(26)+ 'a'));
+            return CorruptedMessage.toString();
+         }
+
+
 
     }
 
