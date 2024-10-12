@@ -46,11 +46,23 @@ public class serverView {
                  // Caluclate checksum of the received message
                  String calculateChecksum = calculateChecksum(message);
 
+                 // Compare calculated checksum with received checksum
+
+                 if (!calculateChecksum.equals(receivedChecksum))  { //if checksum don't match
+                     outToClient.writeBytes("Error: The Received Message is not correct\n"); // Send error message to the client
+                  } else {
+                     outToClient.writeBytes("Confirmation: Message received correctly \n");
+
+                  }
+
           
 
                } // End the loop 
 
-               
+               // Close the connection and server socket
+
+               clientSocket.close();
+               serverSocket.close();
 
 
           } // End main 
@@ -63,12 +75,46 @@ public class serverView {
                 
 
                //loop through the message 16-bits at a time
-               for (int i = 0; i < messagelength(); i+=2) {
+               for (int i = 0; i < message.length(); i += 2) {
+                  int word = 0;
 
-                   
-               }
+                  // Get the first charachter (8 bits)
+                  word = message.charAt(i) << 8; // Shift the first charcter 8 bits to the left (upper byte)
 
-           }     
+                  // Get the second charcter if it exists
+                  if (i + 1 < message.length()) {
+                     word += message.charAt(i + 1); // Add the second charcter (lower byte)
+
+                  }
+
+                  // Add the 16-bit word to the checksum
+                  checksum += word;
+
+                  // Handle carry (wrap around) if the sum exceeds 16 bits
+
+                  if ((checksum & 0xFFFF0000) > 0) { // If ther's a carry beyond 16 bits 
+
+                  checksum &= 0xFFFF; // Keep only the lower 16 bits
+                  checksum++; // Add the carry
+
+                  }
+                                     
+               } // End loop 
+
+               // One's complement
+               checksum = ~checksum;
+
+               // Print the checksum as a binary string and hexdecimal value
+               System.out.println("Checksum (binary):" + String.format("%16s", Integer.toBinaryString(checksum)).replace(' ', '0'));
+               System.out.println("Checksum (hexdecimal): " + Integer.toBinaryString(checksum).toUpperCase());
+
+
+               // Return the checksum as a hexdecimal string
+               return  Integer.toHexString(checksum).toUpperCase();
+
+
+ 
+            }     
           
      
 
