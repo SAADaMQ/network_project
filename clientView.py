@@ -13,7 +13,7 @@ def calculate_checksum(message):
         checksum += word  # Sum the 16-bit word
         if checksum & 0x10000:  # Handle carry (wrap around)
             checksum = (checksum & 0xFFFF) + 1
-    checksum = ~checksum & 0xFFFF  # One's complement (invert all bits)
+    checksum = ~checksum & 0xFFFF  # One's complement (invert all bits) by using ~
     return format(checksum, '016b')  # Return as a 16-bit binary string
 
 # Function to introduce errors in the message with a given probability
@@ -24,7 +24,7 @@ def introduce_error(message, error_probability):
     return message
 
 def start_client():
-    server_ip = '192.168.100.160'  # Server's IP address
+    server_ip = '192.168.100.160'  # TEST Server IP address
     port = 8080  # Port to connect to
 
     try:
@@ -72,10 +72,11 @@ def start_client():
 
         # Send the message and its checksum to the server
         client_socket.sendall(f"{message}:{checksum}".encode('utf-8'))
+        
 
         # Receive and print the server response
         server_response = client_socket.recv(1024).decode('utf-8')
-        print("Server: ", server_response)
+        print("Server:", server_response )
 
     client_socket.close()  # Close the socket connection
 

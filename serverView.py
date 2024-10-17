@@ -18,16 +18,20 @@ def calculate_checksum(message):
     return format(checksum, '016b')  # Return as a 16-bit binary string
 
 def start_server():
-    server_address = '192.168.100.160'  # Server's IP address
+    server_address = '192.168.100.160'  #TEST Server IP address
     port = 8080  # the port of the server 
 
     # Create the server socket
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_socket.bind((server_address, port))  # Bind to the address and port
-    server_socket.listen(1)  #  The server will allow one connection to wait in the queue, only 1 user 
+    server_socket.listen(1)  #  The server will allow one connection to wait in the queue(for simple server)
     
     print(f"The Server is Available and wait for Client on port {port}")
 
+    # if you want the server is ALWAYS ON HOST use here infnite while true without break
+    # this will make the server run even the client disconnect :) 
+    # but we dont have the best resourcses for infnite loops :(  
+    
     # Accept client connection
     client_socket, client_address = server_socket.accept()
     print(f"Client connected from {client_address}")
@@ -52,12 +56,19 @@ def start_server():
         # Calculate checksum for the received message
         calculated_checksum = calculate_checksum(message)
 
+
+
+
+
+
+
         # Check if calculated checksum matches the received checksum
         if calculated_checksum != received_checksum:
-            client_socket.sendall("Error: The Received Message is not correct\n".encode('utf-8'))
+            client_socket.sendall(f"Error: The Received Message is not correct with server checksum: {calculated_checksum} client checksum: {received_checksum}\n".encode('utf-8'))
         else:
-            client_socket.sendall("Acknowledged: Message received correctly\n".encode('utf-8'))
-
+            client_socket.sendall(f"Acknowledged: Message received correctly checksum: {calculated_checksum} client checksum: {received_checksum}\n".encode('utf-8'))
+#the\n helps ensure that when this error message is displayed on the client side, it’s printed correctly.
+    
     client_socket.close()  # Close client connection
     server_socket.close()  # Close server
 
